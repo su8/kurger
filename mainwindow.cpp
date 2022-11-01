@@ -1,5 +1,5 @@
 /*
-  11/01/2022 https://github.com/su8/pdf2img_windows
+  11/01/2022 https://github.com/su8/kurger
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -56,7 +56,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -73,7 +72,6 @@ void MainWindow::on_pushButton_clicked()
     }
 }
 
-
 void MainWindow::on_pushButton_2_clicked()
 {
     int spin1 = UI->spinBox_2->value();
@@ -89,8 +87,10 @@ void MainWindow::on_pushButton_2_clicked()
                 QObject::tr("Open PDF file"),
                 QDir::currentPath(),
                 QObject::tr("PDF File (*.pdf)"));
-    PdfFile = filename.toStdString();
-    pdf2img(filename.toStdString());
+    if(!filename.isEmpty() && !filename.isNull()){
+        PdfFile = filename.toStdString();
+        pdf2img(filename.toStdString());
+    }
 }
 
 void RaiseWarning(const QString &msg1, const QString &msg2)
@@ -107,6 +107,7 @@ void pdf2img(const std::string &str)
     const char *image_combo = UI->comboBox_2->currentText().toStdString().c_str();
     const char *sdevice_combo = UI->comboBox->currentText().toStdString().c_str();
     char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
+    char image_combo2[VLA+1], sdevice_combo2[VLA+1];
     char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
@@ -215,7 +216,7 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 }
 
 /*
-   return the last seperator '\' index number,
+   return the last seperator '/' index number,
    we will use this index number to create our own
    `basename' alternative in C
 */
