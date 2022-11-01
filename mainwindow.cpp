@@ -107,7 +107,6 @@ void pdf2img(const std::string &str)
     const char *image_combo = UI->comboBox_2->currentText().toStdString().c_str();
     const char *sdevice_combo = UI->comboBox->currentText().toStdString().c_str();
     char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
-    char image_combo2[VLA+1], sdevice_combo2[VLA+1];
     char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
