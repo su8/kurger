@@ -104,8 +104,8 @@ void RaiseWarning(const QString &msg1, const QString &msg2)
 
 void pdf2img(const std::string &str)
 {
-    const char *image_combo = UI->comboBox_2->currentText().toStdString().c_str();
-    const char *sdevice_combo = UI->comboBox->currentText().toStdString().c_str();
+    const char *image_combo = UI->comboBox->currentText().toStdString().c_str();
+    const char *sdevice_combo = UI->comboBox_2->currentText().toStdString().c_str();
     char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
     char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
     int spin1 = UI->spinBox_2->value();
@@ -146,12 +146,12 @@ void pdf2img(const std::string &str)
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=%s -sBandListStorage=memory "
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 %s\"%s\"",
-      spin1, spin2, pdfname, sdevice_combo, image_combo, UI->spinBox->value(), "4", "", str.c_str());
+      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str.c_str());
     system(params);
 
     for (y = 1; y < small_range; y++, big_range++) {
-      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, sdevice_combo);
-      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, sdevice_combo);
+      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
+      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
       rename(ren1, ren2);
     }
 }
