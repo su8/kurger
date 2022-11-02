@@ -228,6 +228,7 @@ void pdf2img(const std::string &str)
     for (y = 1; y < small_range; y++, big_range++) {
       snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
       snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
+      remove(ren2);
       rename(ren1, ren2);
     }
 }
