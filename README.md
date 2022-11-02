@@ -1,4 +1,6 @@
-[![flawfinder](https://github.com/su8/kurger/actions/workflows/flawfinder.yml/badge.svg)](https://github.com/su8/kurger/actions/workflows/flawfinder.yml) ![](media/snap.png)
+[![flawfinder](https://github.com/su8/kurger/actions/workflows/flawfinder.yml/badge.svg?branch=main)](https://github.com/su8/kurger/actions/workflows/flawfinder.yml)
+
+![](media/snap.png)
 
 **kurger** is a small and open source graphical application written in C++ and designed to act as a quick solution for converting PDF files to image files.
 
