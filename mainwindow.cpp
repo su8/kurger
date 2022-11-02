@@ -29,11 +29,11 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-void RaiseWarning(const QString &msg1, const QString &msg2);
-void pdf2img(const std::string &str);
-size_t index_last_sep(const char *str);
+static void RaiseWarning(const QString &msg1, const QString &msg2);
+static void pdf2img(const char *str);
+static size_t index_last_sep(const char *str);
 
-#define VLA 5000
+#define VLA 4999
 
 static std::string PdfFile = "";
 
@@ -68,7 +68,7 @@ void MainWindow::on_pushButton_clicked()
 {
     if (PdfFile != "")
     {
-        pdf2img(PdfFile);
+        pdf2img(PdfFile.c_str());
     }
 }
 
@@ -90,7 +90,7 @@ void MainWindow::on_pushButton_2_clicked()
     if ((!filename.isEmpty()) && (!filename.isNull()))
     {
         PdfFile = filename.toStdString();
-        pdf2img(filename.toStdString());
+        pdf2img(filename.toStdString().c_str());
     }
 }
 
@@ -178,7 +178,7 @@ size_t index_last_sep(const char *str) {
   return sep_index;
 }
 
-void pdf2img(const std::string &str)
+void pdf2img(const char *str)
 {
     const char *image_combo = UI->comboBox->currentText().toStdString().c_str();
     const char *sdevice_combo = UI->comboBox_2->currentText().toStdString().c_str();
@@ -187,8 +187,8 @@ void pdf2img(const std::string &str)
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
     int small_range = (spin2 - spin1) + 2, big_range = spin1, y = 0;
-    size_t dirname_len = index_last_sep(str.c_str()), x = 0, z = 0;
-    size_t fit = strlen(str.c_str());
+    size_t dirname_len = index_last_sep(str), x = 0, z = 0;
+    size_t fit = strlen(str);
     size_t fit2 = fit - 4; /* exclude the .pdf file extension */
     struct stat DiR;
 
@@ -201,7 +201,7 @@ void pdf2img(const std::string &str)
       return;
     }
 
-    snprintf(pdfname, VLA, "%s", str.c_str());
+    snprintf(pdfname, VLA, "%s", str);
 
     for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
       BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
@@ -222,7 +222,7 @@ void pdf2img(const std::string &str)
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=%s -sBandListStorage=memory "
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 %s\"%s\"",
-      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str.c_str());
+      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str);
     system(params);
 
     for (y = 1; y < small_range; y++, big_range++) {
