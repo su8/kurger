@@ -1,3 +1,5 @@
+![](snap.png)
+
 **kurger** is a small and open source graphical application written in C++ and designed to act as a quick solution for converting PDF files to image files.
 
 **kurger** features support for four different image formats, including PNG, JPG, BMP, and TIFF, as well as support for ten Ghostscript devices, including png16m, pngalpha, pnggray, jpeg, jpegcmyk, jpeggray, bmp16m, bmpgray, tiff24nc, and tiffgray.
