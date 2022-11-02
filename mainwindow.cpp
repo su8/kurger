@@ -78,7 +78,7 @@ void MainWindow::on_pushButton_2_clicked()
     int spin2 = UI->spinBox_3->value();
 
     if (spin1 > spin2) {
-      RaiseWarning("Reversed Numbers", "From page can't be greater than To.");
+      RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
       return;
     }
 
@@ -87,7 +87,8 @@ void MainWindow::on_pushButton_2_clicked()
                 QObject::tr("Open PDF file"),
                 QDir::currentPath(),
                 QObject::tr("PDF File (*.pdf)"));
-    if(!filename.isEmpty() && !filename.isNull()){
+    if ((!filename.isEmpty()) && (!filename.isNull()))
+    {
         PdfFile = filename.toStdString();
         pdf2img(filename.toStdString());
     }
@@ -100,60 +101,6 @@ void RaiseWarning(const QString &msg1, const QString &msg2)
     msgWarning.setIcon(QMessageBox::Warning);
     msgWarning.setWindowTitle(msg1);
     msgWarning.exec();
-}
-
-void pdf2img(const std::string &str)
-{
-    const char *image_combo = UI->comboBox->currentText().toStdString().c_str();
-    const char *sdevice_combo = UI->comboBox_2->currentText().toStdString().c_str();
-    char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
-    char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
-    int spin1 = UI->spinBox_2->value();
-    int spin2 = UI->spinBox_3->value();
-    int small_range = (spin2 - spin1) + 2, big_range = spin1, y = 0;
-    size_t dirname_len = index_last_sep(str.c_str()), x = 0, z = 0;
-    size_t fit = strlen(str.c_str());
-    size_t fit2 = fit - 4; /* exclude the .pdf file extension */
-    struct stat DiR;
-
-    if (1850 <= fit) {
-      RaiseWarning("Warning!", "The given filename is too long!");
-      return;
-    }
-    if (spin1 > spin2) {
-      RaiseWarning("Reversed Numbers", "From page can't be greater than To.");
-      return;
-    }
-
-    snprintf(pdfname, VLA, "%s", str.c_str());
-
-    for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
-      BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
-    BaseName[z] = '\0';
-
-    if (240 < z) {
-      RaiseWarning("Warning!", "The given filename is too long!");
-      return;
-    }
-
-    snprintf(created_dir, VLA, "%s converted", pdfname);
-    stat(created_dir, &DiR);
-    if (0 == S_ISDIR(DiR.st_mode)) {
-      mkdir(created_dir);
-    }
-
-    snprintf(params, VLA, "C:\\gs\\bin\\gswin64.exe -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
-                    "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
-                    "-dGraphicsAlphaBits=%s -sBandListStorage=memory "
-                    "-dBufferSpace=99000 -dNumRenderingThreads=8 %s\"%s\"",
-      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str.c_str());
-    system(params);
-
-    for (y = 1; y < small_range; y++, big_range++) {
-      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
-      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
-      rename(ren1, ren2);
-    }
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
@@ -229,4 +176,58 @@ size_t index_last_sep(const char *str) {
     }
 
   return sep_index;
+}
+
+void pdf2img(const std::string &str)
+{
+    const char *image_combo = UI->comboBox->currentText().toStdString().c_str();
+    const char *sdevice_combo = UI->comboBox_2->currentText().toStdString().c_str();
+    char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
+    char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
+    int spin1 = UI->spinBox_2->value();
+    int spin2 = UI->spinBox_3->value();
+    int small_range = (spin2 - spin1) + 2, big_range = spin1, y = 0;
+    size_t dirname_len = index_last_sep(str.c_str()), x = 0, z = 0;
+    size_t fit = strlen(str.c_str());
+    size_t fit2 = fit - 4; /* exclude the .pdf file extension */
+    struct stat DiR;
+
+    if (1850 <= fit) {
+      RaiseWarning("Warning!", "The given filename is too long!");
+      return;
+    }
+    if (spin1 > spin2) {
+      RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
+      return;
+    }
+
+    snprintf(pdfname, VLA, "%s", str.c_str());
+
+    for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
+      BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
+    BaseName[z] = '\0';
+
+    if (240 < z) {
+      RaiseWarning("Warning!", "The given filename is too long!");
+      return;
+    }
+
+    snprintf(created_dir, VLA, "%s converted", pdfname);
+    stat(created_dir, &DiR);
+    if (0 == S_ISDIR(DiR.st_mode)) {
+      mkdir(created_dir);
+    }
+
+    snprintf(params, VLA, "C:\\gs\\bin\\gswin64.exe -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
+                    "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
+                    "-dGraphicsAlphaBits=%s -sBandListStorage=memory "
+                    "-dBufferSpace=99000 -dNumRenderingThreads=8 %s\"%s\"",
+      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str.c_str());
+    system(params);
+
+    for (y = 1; y < small_range; y++, big_range++) {
+      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
+      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
+      rename(ren1, ren2);
+    }
 }
