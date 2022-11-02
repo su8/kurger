@@ -1,4 +1,4 @@
-![](snap.png)
+![](media/snap.png)
 
 **kurger** is a small and open source graphical application written in C++ and designed to act as a quick solution for converting PDF files to image files.
 
@@ -12,4 +12,4 @@ This is the windows version of https://github.com/su8/pdf2img-c. You'll need to 
 
 After that import all project files and compile with **CTRL + r**. From now on, you can use the compiled **kurger** executable to convert pdf files to images.
 
-You'll also need to install [Ghostscript](https://ghostscript.com/releases/gsdnld.html) go with the one for windows. Install Ghostscript to **C:\gs**.
+You'll also need to install [Ghostscript](https://ghostscript.com/releases/gsdnld.html), go with the one for windows. Install Ghostscript into **C:\gs**.
