@@ -18,6 +18,9 @@
     <normaloff>media/icon.xpm</normaloff>media/icon.xpm</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
@@ -89,7 +92,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>160</x>
       <y>80</y>
       <width>63</width>
       <height>20</height>
