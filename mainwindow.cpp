@@ -31,7 +31,7 @@
 
 static void RaiseWarning(const QString &msg1, const QString &msg2);
 static void pdf2img(const char *str);
-static size_t index_last_sep(const char *str);
+static size_t indexLastSep(const char *str);
 
 #define VLA 4999
 
@@ -83,6 +83,7 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
+    const char *dialogFile = "";
 
     if (spin1 > spin2) {
       RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
@@ -95,10 +96,11 @@ void MainWindow::on_pushButton_2_clicked()
                 QObject::tr("PDF File (*.pdf)"));
     if ((!filename.isEmpty()) && (!filename.isNull()))
     {
-        snprintf(lastDirectory, VLA, "%s", filename.toStdString().c_str());
-        lastDirectory[index_last_sep(filename.toStdString().c_str())] = '\0';
+        dialogFile = filename.toStdString().c_str();
+        snprintf(lastDirectory, VLA, "%s", dialogFile);
+        lastDirectory[indexLastSep(dialogFile)] = '\0';
         PdfFile = filename.toStdString();
-        pdf2img(filename.toStdString().c_str());
+        pdf2img(dialogFile);
     }
 }
 
@@ -174,7 +176,7 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
    we will use this index number to create our own
    `basename' alternative in C
 */
-size_t index_last_sep(const char *str) {
+size_t indexLastSep(const char *str) {
   const char *ptr = str;
   size_t sep_index = 0 , x = 0;
 
@@ -195,7 +197,7 @@ void pdf2img(const char *str)
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
     int small_range = (spin2 - spin1) + 2, big_range = spin1, y = 0;
-    size_t dirname_len = index_last_sep(str), x = 0, z = 0;
+    size_t dirname_len = indexLastSep(str), x = 0, z = 0;
     size_t fit = strlen(str);
     size_t fit2 = fit - 4; /* exclude the .pdf file extension */
     struct stat DiR;
