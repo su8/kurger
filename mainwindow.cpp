@@ -83,13 +83,11 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
-    size_t indexLastSep = 0U;
 
     if (spin1 > spin2) {
       RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
       return;
     }
-
     QString filename = QFileDialog::getOpenFileName(
                 nullptr,
                 QObject::tr("Open PDF file"),
@@ -98,8 +96,7 @@ void MainWindow::on_pushButton_2_clicked()
     if ((!filename.isEmpty()) && (!filename.isNull()))
     {
         snprintf(lastDirectory, VLA, "%s", filename.toStdString().c_str());
-        indexLastSep = index_last_sep(filename.toStdString().c_str());
-        lastDirectory[indexLastSep] = '\0';
+        lastDirectory[index_last_sep(filename.toStdString().c_str())] = '\0';
         PdfFile = filename.toStdString();
         pdf2img(filename.toStdString().c_str());
     }
