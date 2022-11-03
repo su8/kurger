@@ -1,4 +1,4 @@
-[![flawfinder](https://github.com/su8/kurger/actions/workflows/flawfinder.yml/badge.svg?branch=main)](https://github.com/su8/kurger/actions/workflows/flawfinder.yml)
+[![CodeQL](https://github.com/su8/kurger/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/su8/kurger/actions/workflows/codeql.yml) [![flawfinder](https://github.com/su8/kurger/actions/workflows/flawfinder.yml/badge.svg?branch=main)](https://github.com/su8/kurger/actions/workflows/flawfinder.yml)
 
 ![](media/snap.png)
 
