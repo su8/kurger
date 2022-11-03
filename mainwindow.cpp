@@ -34,6 +34,7 @@ static void pdf2img(const char *str);
 static size_t index_last_sep(const char *str);
 
 #define VLA 4999
+
 #if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
 #define GS "gs"
 #else
@@ -41,8 +42,9 @@ static size_t index_last_sep(const char *str);
 #endif /*__OpenBSD__ || __liunx__ || __FreeBSD__ || __NetBSD__ */
 
 static std::string PdfFile = "";
+static char lastDirectory[VLA+1] = {'\0'};
 
-Ui::MainWindow *UI;
+static Ui::MainWindow *UI;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -81,6 +83,7 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
+    size_t indexLastSep = 0U;
 
     if (spin1 > spin2) {
       RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
@@ -90,10 +93,13 @@ void MainWindow::on_pushButton_2_clicked()
     QString filename = QFileDialog::getOpenFileName(
                 nullptr,
                 QObject::tr("Open PDF file"),
-                QDir::currentPath(),
+                (*lastDirectory) ? lastDirectory : QDir::currentPath(),
                 QObject::tr("PDF File (*.pdf)"));
     if ((!filename.isEmpty()) && (!filename.isNull()))
     {
+        snprintf(lastDirectory, VLA, "%s", filename.toStdString().c_str());
+        indexLastSep = index_last_sep(filename.toStdString().c_str());
+        lastDirectory[indexLastSep] = '\0';
         PdfFile = filename.toStdString();
         pdf2img(filename.toStdString().c_str());
     }
