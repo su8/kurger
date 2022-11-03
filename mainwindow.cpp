@@ -17,10 +17,10 @@
 */
 #include <iostream>
 #include <string>
-#include <vector>
 #include <cstdio>
 #include <cstdlib>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <QApplication>
 #include <QFileDialog>
