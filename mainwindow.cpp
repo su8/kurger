@@ -225,7 +225,12 @@ void pdf2img(const char *str)
     snprintf(created_dir, VLA, "%s converted", pdfname);
     stat(created_dir, &DiR);
     if (0 == S_ISDIR(DiR.st_mode)) {
-      mkdir(created_dir);
+#if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
+        mkdir(created_dir, 0700);
+#else
+        mkdir(created_dir);
+#endif /*__OpenBSD__ || __liunx__ || __FreeBSD__ || __NetBSD__ */
+
     }
 
     snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
