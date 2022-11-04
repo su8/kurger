@@ -35,12 +35,6 @@ static size_t indexLastSep(const char *str);
 
 #define VLA 4999
 
-#if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-#define GS "gs"
-#else
-#define GS "C:\\gs\\bin\\gswin64.exe"
-#endif /*__OpenBSD__ || __liunx__ || __FreeBSD__ || __NetBSD__ */
-
 static std::string PdfFile = "";
 static char lastDirectory[VLA+1] = {'\0'};
 
@@ -86,8 +80,8 @@ void MainWindow::on_pushButton_2_clicked()
     const char *dialogFile = "";
 
     if (spin1 > spin2) {
-      RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
-      return;
+        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
+        return;
     }
     QString filename = QFileDialog::getOpenFileName(
                 nullptr,
@@ -174,15 +168,16 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 /*
    return the last seperator '/' index number,
    we will use this index number to create our own
-   `basename' alternative in C
+   `basename' alternative in C++
 */
 size_t indexLastSep(const char *str) {
   const char *ptr = str;
   size_t sep_index = 0 , x = 0;
 
   for (; *ptr; x++, ptr++)
-    if ('/' == *ptr) {
-      sep_index = x; /* keep in mind that we use loop */
+    if ('/' == *ptr)
+    {
+        sep_index = x; /* keep in mind that we use loop */
     }
 
   return sep_index;
@@ -203,23 +198,25 @@ void pdf2img(const char *str)
     struct stat DiR;
 
     if (1850 <= fit) {
-      RaiseWarning("Warning!", "The given filename is too long!");
-      return;
+        RaiseWarning("Warning!", "The given filename is too long!");
+        return;
     }
     if (spin1 > spin2) {
-      RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
-      return;
+        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
+        return;
     }
 
     snprintf(pdfname, VLA, "%s", str);
 
     for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
-      BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
+    {
+        BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
+    }
     BaseName[z] = '\0';
 
     if (240 < z) {
-      RaiseWarning("Warning!", "The given filename is too long!");
-      return;
+        RaiseWarning("Warning!", "The given filename is too long!");
+        return;
     }
 
     snprintf(created_dir, VLA, "%s converted", pdfname);
@@ -227,17 +224,18 @@ void pdf2img(const char *str)
     if (0 == S_ISDIR(DiR.st_mode)) {
 #if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
         mkdir(created_dir, 0700);
+#define GS "gs"
 #else
         mkdir(created_dir);
+#define GS "C:\\gs\\bin\\gswin64.exe"
 #endif /*__OpenBSD__ || __liunx__ || __FreeBSD__ || __NetBSD__ */
-
     }
 
     snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
-                    "-dGraphicsAlphaBits=%s -sBandListStorage=memory "
-                    "-dBufferSpace=99000 -dNumRenderingThreads=8 %s\"%s\"",
-      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), "4", "", str);
+                    "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
+                    "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
+      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), str);
     system(params);
 
     for (y = 1; y < small_range; y++, big_range++) {
