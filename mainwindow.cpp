@@ -79,7 +79,8 @@ void MainWindow::on_pushButton_2_clicked()
     int spin2 = UI->spinBox_3->value();
     const char *dialogFile = "";
 
-    if (spin1 > spin2) {
+    if (spin1 > spin2)
+    {
         RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
         return;
     }
@@ -111,14 +112,20 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
     unsigned short int current = 0;
 
-    if (index == 0) {
-      current = 0;
-    } else {
-      if (index == 1) {
-        current = 3;
-      } else {
-        current = (index == 2) ? 6 : 8;
-      }
+    if (index == 0)
+    {
+        current = 0;
+    }
+    else
+    {
+        if (index == 1)
+        {
+            current = 3;
+        }
+        else
+        {
+            current = (index == 2) ? 6 : 8;
+        }
     }
     UI->comboBox_2->setCurrentIndex(current);
 }
@@ -197,31 +204,34 @@ void pdf2img(const char *str)
     size_t fit2 = fit - 4; /* exclude the .pdf file extension */
     struct stat DiR;
 
-    if (1850 <= fit) {
+    if (1850U <= fit)
+    {
         RaiseWarning("Warning!", "The given filename is too long!");
         return;
     }
-    if (spin1 > spin2) {
+    if (spin1 > spin2)
+    {
         RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
         return;
     }
 
     snprintf(pdfname, VLA, "%s", str);
-
     for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
     {
         BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
     }
     BaseName[z] = '\0';
 
-    if (240 < z) {
+    if (240U < z)
+    {
         RaiseWarning("Warning!", "The given filename is too long!");
         return;
     }
 
     snprintf(created_dir, VLA, "%s converted", pdfname);
     stat(created_dir, &DiR);
-    if (0 == S_ISDIR(DiR.st_mode)) {
+    if (0 == S_ISDIR(DiR.st_mode))
+    {
 #if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
         mkdir(created_dir, 0700);
 #define GS "gs"
@@ -238,7 +248,8 @@ void pdf2img(const char *str)
       spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), str);
     system(params);
 
-    for (y = 1; y < small_range; y++, big_range++) {
+    for (y = 1; y < small_range; y++, big_range++)
+    {
       snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
       snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
       remove(ren2);
