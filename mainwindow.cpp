@@ -192,8 +192,7 @@ size_t indexLastSep(const char *str) {
 
 void pdf2img(const char *str)
 {
-    const char *image_combo = UI->comboBox->currentText().toStdString().c_str();
-    const char *sdevice_combo = UI->comboBox_2->currentText().toStdString().c_str();
+    char image_combo[10], sdevice_combo[10];
     char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
     char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
     int spin1 = UI->spinBox_2->value();
@@ -214,6 +213,9 @@ void pdf2img(const char *str)
         RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
         return;
     }
+
+    snprintf(image_combo, 10, "%s", UI->comboBox->currentText().toStdString().c_str());
+    snprintf(sdevice_combo, 10, "%s", UI->comboBox_2->currentText().toStdString().c_str());
 
     snprintf(pdfname, VLA, "%s", str);
     for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
