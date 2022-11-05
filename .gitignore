@@ -34,3 +34,4 @@
 # Build directories
 build-*
 CMakeFiles
+kurger_windows_autogen
