@@ -77,7 +77,7 @@ void MainWindow::on_pushButton_2_clicked()
 {
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
-    const char *dialogFile = "";
+    char dialogFile[VLA+1] = {'\0'};
 
     if (spin1 > spin2)
     {
@@ -91,7 +91,7 @@ void MainWindow::on_pushButton_2_clicked()
                 QObject::tr("PDF File (*.pdf)"));
     if ((!filename.isEmpty()) && (!filename.isNull()))
     {
-        dialogFile = filename.toStdString().c_str();
+        snprintf(dialogFile, VLA, "%s", filename.toStdString().c_str());
         snprintf(lastDirectory, VLA, "%s", dialogFile);
         lastDirectory[indexLastSep(dialogFile)] = '\0';
         PdfFile = filename.toStdString();
