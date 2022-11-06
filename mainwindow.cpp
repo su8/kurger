@@ -30,7 +30,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-static void RaiseWarning(const QString &msg1, const QString &msg2);
+static void RaiseWarning(const QString &msg1, const QString &msg2, unsigned short int isWarning);
 static void pdf2img(const char *str);
 static size_t indexLastSep(const char *str);
 
@@ -82,7 +82,7 @@ void MainWindow::on_pushButton_2_clicked()
 
     if (spin1 > spin2)
     {
-        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
+        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
     }
     QString filename = QFileDialog::getOpenFileName(
@@ -100,11 +100,11 @@ void MainWindow::on_pushButton_2_clicked()
     }
 }
 
-void RaiseWarning(const QString &msg1, const QString &msg2)
+void RaiseWarning(const QString &msg1, const QString &msg2, unsigned short int isWarning)
 {
     QMessageBox msgWarning;
     msgWarning.setText(msg2);
-    msgWarning.setIcon(QMessageBox::Warning);
+    msgWarning.setIcon((isWarning == 1U) ? QMessageBox::Warning : QMessageBox::Information);
     msgWarning.setWindowTitle(msg1);
     msgWarning.setWindowIcon(static_cast<QIcon>("media/icon.xpm"));
     msgWarning.exec();
@@ -207,12 +207,12 @@ void pdf2img(const char *str)
 
     if (1850U <= fit)
     {
-        RaiseWarning("Warning!", "The given filename is too long!");
+        RaiseWarning("Warning!", "The given filename is too long!", 1U);
         return;
     }
     if (spin1 > spin2)
     {
-        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.");
+        RaiseWarning("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
     }
 
@@ -228,7 +228,7 @@ void pdf2img(const char *str)
 
     if (240U < z)
     {
-        RaiseWarning("Warning!", "The given filename is too long!");
+        RaiseWarning("Warning!", "The given filename is too long!", 1U);
         return;
     }
 
@@ -250,6 +250,7 @@ void pdf2img(const char *str)
                     "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
       spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), str);
+    RaiseWarning("Please wait...", "Please wait until we convert the requested images.", 0U);
     system(params);
 
     for (y = 1; y < small_range; y++, big_range++)
