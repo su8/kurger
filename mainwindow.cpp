@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QIcon>
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -105,6 +106,7 @@ void RaiseWarning(const QString &msg1, const QString &msg2)
     msgWarning.setText(msg2);
     msgWarning.setIcon(QMessageBox::Warning);
     msgWarning.setWindowTitle(msg1);
+    msgWarning.setWindowIcon(static_cast<QIcon>("media/icon.xpm"));
     msgWarning.exec();
 }
 
