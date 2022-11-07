@@ -117,16 +117,13 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     {
         sdevCombo = 0;
     }
+    else if (index == 1)
+    {
+        sdevCombo = 3;
+    }
     else
     {
-        if (index == 1)
-        {
-            sdevCombo = 3;
-        }
-        else
-        {
-            sdevCombo = (index == 2) ? 6 : 8;
-        }
+        sdevCombo = (index == 2) ? 6 : 8;
     }
     UI->comboBox_2->setCurrentIndex(sdevCombo);
 }
@@ -185,7 +182,7 @@ size_t indexLastSep(const char *str)
             sep_index = x; /* keep in mind that we use loop */
         }
     }
-  return sep_index;
+    return sep_index;
 }
 
 void pdf2img(const char *str)
