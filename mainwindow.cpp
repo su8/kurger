@@ -38,7 +38,6 @@ static size_t indexLastSep(const char *str);
 
 static std::string PdfFile = "";
 static char lastDirectory[VLA+1] = {'\0'};
-
 static Ui::MainWindow *UI;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -112,70 +111,70 @@ void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWar
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
-    unsigned short int current = 0;
+    unsigned short int sdevCombo = 0;
 
     if (index == 0)
     {
-        current = 0;
+        sdevCombo = 0;
     }
     else
     {
         if (index == 1)
         {
-            current = 3;
+            sdevCombo = 3;
         }
         else
         {
-            current = (index == 2) ? 6 : 8;
+            sdevCombo = (index == 2) ? 6 : 8;
         }
     }
-    UI->comboBox_2->setCurrentIndex(current);
+    UI->comboBox_2->setCurrentIndex(sdevCombo);
 }
 
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
-    unsigned short int next = 0, current = 0;
+    unsigned short int sdevCombo = 0, imageCombo = 0;
 
     if (index == 0)
-        next = 0;
+        sdevCombo = 0;
     else
       if (index == 1)
-        next = 1;
+        sdevCombo = 1;
       else
         if (index == 2)
-          next = 2;
+          sdevCombo = 2;
         else    /* 'active' not in png group */
         {
-          current = 1; /* The jpg group */
+          imageCombo = 1; /* The jpg group */
           if (index == 3)
-            next = 3;
+            sdevCombo = 3;
           else
             if (index == 4)
-              next = 4;
+              sdevCombo = 4;
             else
               if (index == 5)
-                next = 5;
+                sdevCombo = 5;
               else    /* 'active' not in jpg group */
               {
-                current = 2; /* The bmp group */
+                imageCombo = 2; /* The bmp group */
                 if (index == 6)
-                  next = 6;
+                  sdevCombo = 6;
                 else
                   if (index == 7)
-                    next = 7;
+                    sdevCombo = 7;
                   else    /* 'active' not in bmp group */
                   {
-                    current = 3; /* The tiff group */
-                    next = (index == 8) ? 8 : 9;
+                    imageCombo = 3; /* The tiff group */
+                    sdevCombo = (index == 8) ? 8 : 9;
                   }
               }
           }
-    UI->comboBox->setCurrentIndex(current);
-    UI->comboBox_2->setCurrentIndex(next);
+    UI->comboBox->setCurrentIndex(imageCombo);
+    UI->comboBox_2->setCurrentIndex(sdevCombo);
 }
 
 /*
-   return the last seperator '/' index number,
+   return the last separator '/' index number,
    we will use this index number to create our own
    `basename' alternative in C++
 */
