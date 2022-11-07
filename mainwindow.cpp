@@ -178,16 +178,18 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
    we will use this index number to create our own
    `basename' alternative in C++
 */
-size_t indexLastSep(const char *str) {
-  const char *ptr = str;
-  size_t sep_index = 0 , x = 0;
+size_t indexLastSep(const char *str)
+{
+    const char *ptr = str;
+    size_t sep_index = 0 , x = 0;
 
-  for (; *ptr; x++, ptr++)
-    if ('/' == *ptr)
+    for (; *ptr; x++, ptr++)
     {
-        sep_index = x; /* keep in mind that we use loop */
+        if ('/' == *ptr)
+        {
+            sep_index = x; /* keep in mind that we use loop */
+        }
     }
-
   return sep_index;
 }
 
@@ -231,7 +233,7 @@ void pdf2img(const char *str)
         return;
     }
 
-    snprintf(created_dir, VLA, "%s converted", pdfname);
+    snprintf(created_dir, VLA, "%s_converted", pdfname);
     stat(created_dir, &DiR);
     if (0 == S_ISDIR(DiR.st_mode))
     {
