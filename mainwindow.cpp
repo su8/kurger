@@ -137,38 +137,33 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 
     if (index == 0)
         sdevCombo = 0;
-    else
-      if (index == 1)
+    else if (index == 1)
         sdevCombo = 1;
-      else
-        if (index == 2)
-          sdevCombo = 2;
-        else    /* 'active' not in png group */
-        {
-          imageCombo = 1; /* The jpg group */
-          if (index == 3)
+    else if (index == 2)
+        sdevCombo = 2;
+    else    /* 'active' not in png group */
+    {
+        imageCombo = 1; /* The jpg group */
+        if (index == 3)
             sdevCombo = 3;
-          else
-            if (index == 4)
-              sdevCombo = 4;
-            else
-              if (index == 5)
-                sdevCombo = 5;
-              else    /* 'active' not in jpg group */
-              {
-                imageCombo = 2; /* The bmp group */
-                if (index == 6)
-                  sdevCombo = 6;
-                else
-                  if (index == 7)
-                    sdevCombo = 7;
-                  else    /* 'active' not in bmp group */
-                  {
-                    imageCombo = 3; /* The tiff group */
-                    sdevCombo = (index == 8) ? 8 : 9;
-                  }
-              }
-          }
+        else if (index == 4)
+            sdevCombo = 4;
+        else if (index == 5)
+            sdevCombo = 5;
+        else    /* 'active' not in jpg group */
+        {
+            imageCombo = 2; /* The bmp group */
+            if (index == 6)
+                sdevCombo = 6;
+            else if (index == 7)
+                sdevCombo = 7;
+            else    /* 'active' not in bmp group */
+            {
+                imageCombo = 3; /* The tiff group */
+                sdevCombo = (index == 8) ? 8 : 9;
+            }
+        }
+    }
     UI->comboBox->setCurrentIndex(imageCombo);
     UI->comboBox_2->setCurrentIndex(sdevCombo);
 }
