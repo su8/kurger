@@ -22,7 +22,6 @@ If on **Linux/\*BSD** compile with:
 
 ```bash
 cmake .
-cmake --build .
 make -j8 # 8 cores/threads to use in parallel compile
 sudo/doas make install
 ```
