@@ -101,12 +101,12 @@ void MainWindow::on_pushButton_2_clicked()
 
 void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWarning)
 {
-    QMessageBox msgWarning;
-    msgWarning.setText(msg2);
-    msgWarning.setIcon((isWarning == 1U) ? QMessageBox::Warning : QMessageBox::Information);
-    msgWarning.setWindowTitle(msg1);
-    msgWarning.setWindowIcon(static_cast<QIcon>("media/icon.xpm"));
-    msgWarning.exec();
+    QMessageBox msg;
+    msg.setText(msg2);
+    msg.setIcon((isWarning == 1U) ? QMessageBox::Warning : QMessageBox::Information);
+    msg.setWindowTitle(msg1);
+    msg.setWindowIcon(static_cast<QIcon>("media/icon.xpm"));
+    msg.exec();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
