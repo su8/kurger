@@ -19,6 +19,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
 
 set(PROJECT_SOURCES
         mainwindow.cpp
@@ -50,6 +51,7 @@ else()
 endif()
 
 target_link_libraries(kurger_windows PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(kurger_windows PRIVATE Qt${QT_VERSION_MAJOR}::Gui)
 
 set_target_properties(kurger_windows PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
