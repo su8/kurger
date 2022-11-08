@@ -27,6 +27,7 @@
 #include <QMessageBox>
 #include <QIcon>
 #include <QDesktopServices>
+#include <QUrl>
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -254,5 +255,5 @@ void pdf2img(const char *str)
       remove(ren2);
       rename(ren1, ren2);
     }
-    QDesktopServices::openUrl(static_cast<QString>(created_dir));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(static_cast<QString>(created_dir)));
 }
