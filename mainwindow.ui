@@ -53,7 +53,7 @@
       <x>10</x>
       <y>30</y>
       <width>101</width>
-      <height>26</height>
+      <height>28</height>
      </rect>
     </property>
     <property name="minimum">
@@ -73,7 +73,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Click Here</string>
+     <string>Click here</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -86,7 +86,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>From:</string>
+     <string>From page:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -94,12 +94,12 @@
      <rect>
       <x>160</x>
       <y>80</y>
-      <width>63</width>
+      <width>52</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>To:</string>
+     <string>To page:</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="spinBox_2">
@@ -157,7 +157,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Click Here</string>
+     <string>Click here</string>
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox">
