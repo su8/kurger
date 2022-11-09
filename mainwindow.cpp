@@ -175,28 +175,27 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 size_t indexLastSep(const char *str)
 {
     const char *ptr = str;
-    size_t sep_index = 0 , x = 0;
+    size_t sepIndex = 0 , x = 0;
 
     for (; *ptr; x++, ptr++)
     {
         if ('/' == *ptr)
         {
-            sep_index = x; /* keep in mind that we use loop */
+            sepIndex = x; /* keep in mind that we use loop */
         }
     }
-    return sep_index;
+    return sepIndex;
 }
 
 void pdf2img(const char *str)
 {
-    char image_combo[10], sdevice_combo[10];
-    char pdfname[VLA+1], BaseName[VLA+1], params[VLA+1];
+    char imageCombo[10], sdeviceCombo[10];
+    char pdfName[VLA+1], BaseName[VLA+1], params[VLA+1];
     char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
-    int small_range = (spin2 - spin1) + 2, big_range = spin1, y = 0;
-    size_t dirname_len = indexLastSep(str), x = 0, z = 0;
-    size_t fit = strlen(str);
+    int smallRange = (spin2 - spin1) + 2, bigRange = spin1, y = 0;
+    size_t dirnameLen = indexLastSep(str), fit = strlen(str), x = 0, z = 0;
     size_t fit2 = fit - 4; /* exclude the .pdf file extension */
     struct stat DiR;
 
@@ -211,23 +210,23 @@ void pdf2img(const char *str)
         return;
     }
 
-    snprintf(image_combo, 10, "%s", UI->comboBox->currentText().toStdString().c_str());
-    snprintf(sdevice_combo, 10, "%s", UI->comboBox_2->currentText().toStdString().c_str());
+    snprintf(imageCombo, 10, "%s", UI->comboBox->currentText().toStdString().c_str());
+    snprintf(sdeviceCombo, 10, "%s", UI->comboBox_2->currentText().toStdString().c_str());
 
-    snprintf(pdfname, VLA, "%s", str);
-    for (z = 0, x = dirname_len+1; x < fit2; x++, z++)
+    snprintf(pdfName, VLA, "%s", str);
+    for (z = 0, x = dirnameLen+1; x < fit2; x++, z++)
     {
-        BaseName[z] = pdfname[x]; /* /path/to/some.pdf -> some      */
+        BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */
     }
     BaseName[z] = '\0';
 
-    if (240U < z)
+    if (250U < z)
     {
         RaiseMsg("Warning!", "The given filename is too long!", 1U);
         return;
     }
 
-    snprintf(created_dir, VLA, "%s_converted", pdfname);
+    snprintf(created_dir, VLA, "%s_converted", pdfName);
     stat(created_dir, &DiR);
     if (0 == S_ISDIR(DiR.st_mode))
     {
@@ -237,21 +236,21 @@ void pdf2img(const char *str)
 #else
         mkdir(created_dir);
 #define GS "C:\\gs\\bin\\gswin64.exe"
-#endif /*__OpenBSD__ || __liunx__ || __FreeBSD__ || __NetBSD__ */
+#endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
     }
 
     snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
-      spin1, spin2, pdfname, image_combo, sdevice_combo, UI->spinBox->value(), str);
+      spin1, spin2, pdfName, imageCombo, sdeviceCombo, UI->spinBox->value(), str);
     RaiseMsg("Please wait...", "Please wait until we convert the requested images.", 0U);
     system(params);
 
-    for (y = 1; y < small_range; y++, big_range++)
+    for (y = 1; y < smallRange; y++, bigRange++)
     {
-      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfname, y, image_combo);
-      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, big_range, image_combo);
+      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfName, y, imageCombo);
+      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, bigRange, imageCombo);
       remove(ren2);
       rename(ren1, ren2);
     }
