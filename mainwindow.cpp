@@ -74,10 +74,12 @@ void MainWindow::on_pushButton_clicked()
         RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
     }
-    if (PdfFile != "")
+    if (PdfFile == "")
     {
-        pdf2img(PdfFile.c_str());
+        RaiseMsg("No pdf selected", "You must select some PDF file first and then click this button.", 1U);
+        return;
     }
+    pdf2img(PdfFile.c_str());
 }
 
 void MainWindow::on_pushButton_2_clicked()
