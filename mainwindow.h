@@ -15,6 +15,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+// Tray icon
+//protected:
+//    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     void on_pushButton_clicked();
 
@@ -25,6 +29,8 @@ private slots:
     void on_comboBox_2_currentIndexChanged(int index);
 
 private:
+    // Tray icon
+    //unsigned short int closing;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

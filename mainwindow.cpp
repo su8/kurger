@@ -28,6 +28,13 @@
 #include <QIcon>
 #include <QDesktopServices>
 #include <QUrl>
+/* Tray icon
+#include <QSystemTrayIcon>
+#include <QMenu>
+#include <QAction>
+#include <QCloseEvent>
+*/
+
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -41,6 +48,10 @@ static size_t indexLastSep(const char *str);
 static std::string PdfFile = "";
 static char lastDirectory[VLA+1] = {'\0'};
 static Ui::MainWindow *UI;
+/* Tray icon
+static QAction *exitAction;
+static QMenu *trayIconMenu;
+static QSystemTrayIcon *sysTrayIcon;*/
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,11 +62,40 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->comboBox->addItems({"png", "jpg", "bmp", "tiff"});
     ui->comboBox_2->addItems({"png16m", "pngalpha", "pnggray", "jpeg", "jpegcmyk", "jpeggray", "bmp16m", "bmpgray", "tiff24nc", "tiffgray"});
+
+    /* Tray icon
+    closing = 0U;
+
+    exitAction = new QAction(tr("&Exit"), this);
+    connect(exitAction, &QAction::triggered, [this]() { closing = 1U; close(); });
+
+    trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(exitAction);
+    sysTrayIcon = new QSystemTrayIcon(this);
+    sysTrayIcon->setContextMenu(trayIconMenu);
+    sysTrayIcon->setIcon(QIcon("media/icon.xpm"));
+    sysTrayIcon->show();
+
+    connect(sysTrayIcon, &QSystemTrayIcon::activated, [this](auto reason)
+    {
+        if (reason == QSystemTrayIcon::Trigger)
+        {
+            if (isVisible()) { hide(); }
+            else { show(); activateWindow(); }
+        }
+    });
+*/
 }
 
 MainWindow::~MainWindow()
 {
     //delete UI;
+
+    /* Tray icon
+    delete sysTrayIcon;
+    delete trayIconMenu;
+    delete exitAction; */
+
     delete ui;
 }
 
@@ -66,6 +106,21 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 }
+
+/* Tray icon
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (closing == 1U)
+    {
+        event->accept();
+    }
+    else
+    {
+        this->hide();
+        event->ignore();
+    }
+}
+*/
 
 void MainWindow::on_pushButton_clicked()
 {
