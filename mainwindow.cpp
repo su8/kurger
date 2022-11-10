@@ -69,6 +69,11 @@ int main(int argc, char *argv[])
 
 void MainWindow::on_pushButton_clicked()
 {
+    if (UI->spinBox_2->value() > UI->spinBox_3->value())
+    {
+        RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
+        return;
+    }
     if (PdfFile != "")
     {
         pdf2img(PdfFile.c_str());
