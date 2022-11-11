@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->comboBox->addItems({"png", "jpg", "bmp", "tiff"});
     ui->comboBox_2->addItems({"png16m", "pngalpha", "pnggray", "jpeg", "jpegcmyk", "jpeggray", "bmp16m", "bmpgray", "tiff24nc", "tiffgray"});
 
-    /* Tray icon
+    /* Tray icon, based on https://amin-ahmadi.com/2019/06/20/implementing-minimize-to-tray-functionality-using-qt-c
     closing = 0U;
 
     exitAction = new QAction(tr("&Exit"), this);
