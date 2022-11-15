@@ -139,11 +139,9 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    int spin1 = UI->spinBox_2->value();
-    int spin2 = UI->spinBox_3->value();
     char dialogFile[VLA+1] = {'\0'};
 
-    if (spin1 > spin2)
+    if (UI->spinBox_2->value() > UI->spinBox_3->value())
     {
         RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
@@ -237,7 +235,8 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 size_t indexLastSep(const char *str)
 {
     const char *ptr = str;
-    size_t sepIndex = 0 , x = 0;
+    size_t sepIndex = 0;
+    size_t x = 0;
 
     for (; *ptr; x++, ptr++)
     {
@@ -251,17 +250,26 @@ size_t indexLastSep(const char *str)
 
 void pdf2img(const char *str)
 {
-    char imageCombo[10], sdeviceCombo[10];
-    char pdfName[VLA+1], BaseName[VLA+1], params[VLA+1];
-    char ren1[VLA+1], ren2[VLA+1], created_dir[VLA+1];
+    char imageCombo[10] = {'\0'};
+    char sdeviceCombo[10] = {'\0'};
+    char pdfName[VLA+1] = {'\0'};
+    char BaseName[VLA+1] = {'\0'};
+    char params[VLA+1] = {'\0'};
+    char ren1[VLA+1] = {'\0'};
+    char ren2[VLA+1] = {'\0'};
+    char created_dir[VLA+1] = {'\0'};
     int spin1 = UI->spinBox_2->value();
     int spin2 = UI->spinBox_3->value();
-    int smallRange = (spin2 - spin1) + 2, bigRange = spin1, y = 0;
-    size_t dirnameLen = indexLastSep(str), fit = strlen(str), x = 0, z = 0;
-    size_t fit2 = fit - 4; /* exclude the .pdf file extension */
+    int smallRange = (spin2 - spin1) + 2;
+    int bigRange = spin1;
+    int y = 0;
+    size_t dirnameLen = indexLastSep(str);
+    size_t x = 0;
+    size_t z = 0;
+    size_t fit2 = strlen(str) - 4; /* exclude the .pdf file extension */
     struct stat DiR;
 
-    if (1850U <= fit)
+    if (1850U <= fit2)
     {
         RaiseMsg("Warning!", "The given filename is too long!", 1U);
         return;
