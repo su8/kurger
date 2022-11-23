@@ -32,9 +32,7 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include <QAction>
-#include <QCloseEvent>
-*/
-
+#include <QCloseEvent>*/
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
@@ -161,7 +159,7 @@ void MainWindow::on_pushButton_2_clicked()
     }
 }
 
-void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWarning)
+static void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWarning)
 {
     QMessageBox msg;
     msg.setText(msg2);
@@ -232,7 +230,7 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
    we will use this index number to create our own
    `basename' alternative in C++
 */
-size_t indexLastSep(const char *str)
+static size_t indexLastSep(const char *str)
 {
     const char *ptr = str;
     size_t sepIndex = 0;
@@ -248,7 +246,7 @@ size_t indexLastSep(const char *str)
     return sepIndex;
 }
 
-void pdf2img(const char *str)
+static void pdf2img(const char *str)
 {
     char imageCombo[10] = {'\0'};
     char sdeviceCombo[10] = {'\0'};
