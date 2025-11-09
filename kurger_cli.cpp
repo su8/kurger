@@ -28,11 +28,11 @@ MA 02110-1301, USA.
 #define VLA 4999
 
 static size_t indexLastSep(const char *str);
-static void pdf2img(const char *str, int spin1, int spin2, int resolution);
+static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned resolution);
 
 int main(int argc, char *argv[]) {
   if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file 'book.pdf' - the quotes are mandatory for the given file" << std::endl; return EXIT_FAILURE; }
-  pdf2img(argv[8], std::strtol(argv[2], static_cast<char **>(nullptr), 10), std::strtol(argv[4], static_cast<char **>(nullptr), 10), std::strtol(argv[6], static_cast<char **>(nullptr), 10));
+  pdf2img(argv[8], std::strtoul(argv[2], static_cast<char **>(nullptr), 10), std::strtoul(argv[4], static_cast<char **>(nullptr), 10), std::strtoul(argv[6], static_cast<char **>(nullptr), 10));
   return EXIT_SUCCESS;
 }
 
@@ -51,7 +51,7 @@ static size_t indexLastSep(const char *str) {
     return sepIndex;
 }
 
-static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
+static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned resolution) {
   char imageCombo[] = "png";
   char sdeviceCombo[] = "png16m";
   char pdfName[VLA+1] = {'\0'};
@@ -67,7 +67,6 @@ static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
   size_t x = 0;
   size_t z = 0;
   size_t fit = strlen(str) - 4; /* exclude the .pdf file extension */
-  struct stat DiR;
 
   if (1850U <= fit)  { std::cout << "The given filename is too long!\n" << std::endl; return; }
   if (spin1 > spin2) { std::cout << "From page can't be greater than To page." << std::endl; return; }
@@ -93,13 +92,13 @@ static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
       spin1, spin2, pdfName, imageCombo, sdeviceCombo, resolution, str);
   std::cout << "Please wait until we convert the requested images." << std::endl;
-  system(params);
+  std::system(params);
 
   for (y = 1; y < smallRange; y++, bigRange++) {
     snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfName, y, imageCombo);
     snprintf(ren2, VLA, "%s/%s_page_%d.%s", createdDir, BaseName, bigRange, imageCombo);
-    remove(ren2);
-    rename(ren1, ren2);
+    std::remove(ren2);
+    std::rename(ren1, ren2);
   }
   std::cout << "Done" << std::endl;
 }
