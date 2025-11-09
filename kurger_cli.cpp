@@ -52,8 +52,8 @@ static size_t indexLastSep(const char *str) {
 }
 
 static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
-    char imageCombo[] = {"png"};
-    char sdeviceCombo[] = {"png16m"};
+    char imageCombo[] = "png";
+    char sdeviceCombo[] = "png16m";
     char pdfName[VLA+1] = {'\0'};
     char BaseName[VLA+1] = {'\0'};
     char params[VLA+1] = {'\0'};
