@@ -93,7 +93,7 @@ In [Visual Studio Code Editor](https://code.visualstudio.com/download), go to **
 }
 ```
 
-To convert some pdf file with the above script, right click and `copy as path` the pdf book, then right click it in the opened window and remove the quotes in both sides.
+To convert some pdf file with the `kurger_cli.bat` script, right click and `copy as path` the **pdf book**, then right click it in the opened CMD window and remove the quotes at both sides.
 
 ### To compile the kurger_cli.cpp press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script. Now you can delete the "kurger_cli.exe" file
 
