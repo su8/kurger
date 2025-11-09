@@ -8,6 +8,9 @@ qt6 - ![](media/snap.png) qt5 - ![](media/snap2.png)
 
 Before the actual conversion, users will be able to set the resolution of the output image, as well as to specify the pages they want to convert. The software can convert multiple PDF pages at once, into multiple images, with a single mouse click.
 
+**kurger_cli.cpp** is command line interface version that wokrs in linux, bsd and windows like it's GUI version.
+
+
 ## Installation
 
 This is the **Qt6/5** version of https://github.com/su8/pdf2img-c. Look at the bottom if you want to use the program on **Linux/\*BSD**. If on **Windows** you'll need to download and install Qt - [Qt installer](https://www.qt.io/cs/c/?cta_guid=074ddad0-fdef-4e53-8aa8-5e8a876d6ab4&signature=AAH58kEJJxpduKtfibJ40aRNSB4V5QaI1A&pageId=12602948080&placement_guid=99d9dd4f-5681-48d2-b096-470725510d34&click=559deaff-10e4-44a7-a78c-ef8b98f3c31a&hsutk=&canon=https%3A%2F%2Fwww.qt.io%2Fdownload-open-source&portal_id=149513&redirect_url=APefjpGq5H2gLEy0rkYfu04Stc7zjmm0KqS_XaAVoOUeI1pUOzGQZgD_zg87kf-KWNMA8LagnlFie8sOAzzTMW8z48C4QlIP08Ykoqpk2QaLznoki0aaOBah-YfMzg2wugOl_TcZQF2S) and install Qt **manually** from the GUI installer.
@@ -25,3 +28,87 @@ cmake .
 make -j8 # 8 cores/threads to use in parallel compile
 sudo/doas make install
 ```
+
+---
+
+## Windows users
+
+Tested with [Visual Studio Code Editor](https://code.visualstudio.com/download), but you need to install [MingW](https://github.com/niXman/mingw-builds-binaries/releases/download/12.2.0-rt_v10-rev0/x86_64-12.2.0-release-posix-seh-rt_v10-rev0.7z), once downloaded extract it to **C:\MingW**, then re-open [Visual Studio Code Editor](https://code.visualstudio.com/download), you might want to install C\C++ extensions if you plan to write C\C++ code with the editor. If you plan to contribute to this project go to **File->Preferences->Settings** and type to search for **cppStandard** and set it to c17 to both C++ and C.
+
+I use **One Monokai** theme for the [VScode Editor](https://code.visualstudio.com/download)
+
+In [Visual Studio Code Editor](https://code.visualstudio.com/download), go to **Terminal->Configure Tasks...->Create tasks.json from template** and copy and paste this into it:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "type": "cppbuild",
+        "label": "C/C++",
+        "command": "C:\\MingW\\bin\\g++.exe",
+        "args": [
+            "-fdiagnostics-color=always",
+            "-std=c++17",
+            "-ggdb",
+            "-lpthread",
+            "-Wall",
+            "-Wextra",
+            "-O2",
+            "-pipe",
+            "-pedantic",
+            "-Wundef",
+            "-Wshadow",
+            "-W",
+            "-Wwrite-strings",
+            "-Wcast-align",
+            "-Wstrict-overflow=5",
+            "-Wconversion",
+            "-Wpointer-arith",
+            "-Wformat=2",
+            "-Wsign-compare",
+            "-Wendif-labels",
+            "-Wredundant-decls",
+            "-Winit-self",
+            "${file}",
+            "-o",
+            "${fileDirname}/${fileBasenameNoExtension}"
+        ],
+        "options": {
+            "cwd": "C:\\MingW\\bin"
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "detail": "compiler: C:\\MingW\\bin\\g++.exe"
+    }
+]
+}
+```
+
+If you want to start a `.bat` script to open up `CMD` window and launch `kurger_cli.exe`:
+
+```makefile
+:TOP
+@CLS
+@ECHO OFF
+echo from 1 to 10 resolution 100 file book.pdf
+SET /P NAME=
+:BEGIN
+COPY kurger_cli.exe C:\MingW\bin\kurger_cli.exe
+CLS
+:loop
+C:\MingW\bin\kurger_cli.exe %name%
+PAUSE
+GOTO loop
+```
+
+The above script will convert the requestd pdf file, but the pictures will omit the first character, so `book.pdf` will become `ook_page_1.png`.
+
+### To compile the game press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script.
+
+Optioanlly if you want to play the game from VSCode's console -- wait until it compiles, after that press **CTRL** + **\`** and paste this `cp -r C:\Users\YOUR_USERNAME_GOES_HERE\Desktop\main.exe C:\MingW\bin;cd C:\MingW\bin;.\main.exe`
