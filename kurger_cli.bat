@@ -1,6 +1,7 @@
 :TOP
 @CLS
 @ECHO OFF
+TITLE kurger_cli
 :BEGIN
 if not exist C:\MingW\bin\kurger_cli.exe (
   COPY kurger_cli.exe C:\MingW\bin\kurger_cli.exe
