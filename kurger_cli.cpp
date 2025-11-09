@@ -46,7 +46,7 @@ static size_t indexLastSep(const char *str) {
     if ('/' == *ptr) { sepIndex = x; /* keep in mind that we use loop */ }
 #else
     if ('\\' == *ptr) { sepIndex = x; }
-#endif
+#endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
   }
     return sepIndex;
 }

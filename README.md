@@ -92,7 +92,7 @@ In [Visual Studio Code Editor](https://code.visualstudio.com/download), go to **
 
 If you want to start a `.bat` script to open up `CMD` window and launch `kurger_cli.exe`:
 
-```makefile
+```bat
 :TOP
 @CLS
 @ECHO OFF
@@ -107,7 +107,7 @@ PAUSE
 GOTO loop
 ```
 
-The above script will convert the requestd pdf file, but the pictures will omit the first character, so `book.pdf` will become `ook_page_1.png`.
+To convert some pdf file with the above script, right click and `copy as path` the pdf book, then right click it in the opened window and remove the quotes in both sides.
 
 ### To compile the kurger_cli.cpp press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script.
 
