@@ -23,7 +23,6 @@ MA 02110-1301, USA.
 #include <string>
 #include <algorithm>
 #include <filesystem>
-#include <sys/stat.h>
 #include <sys/types.h>
 
 #define VLA 4999
@@ -79,19 +78,15 @@ static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
 
   if (250U < z) { std::cout << "The given filename is too long!" << std::endl; return; }
 
-  if (!std::filesystem::exists(pdfName)) { std::cout << pdfName << " doesn't exist.\nExiting!" << std::endl; return;}
   snprintf(createdDir, VLA, "%s_converted", pdfName);
-  stat(createdDir, &DiR);
-  if (0 == S_ISDIR(DiR.st_mode)) {
+  if (!std::filesystem::exists(pdfName)) { std::cout << pdfName << " doesn't exist.\nExiting!" << std::endl; return;}
+  if (!std::filesystem::is_directory(createdDir)) { std::filesystem::create_directory(createdDir); }
+
 #if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-    mkdir(createdDir, 0700);
 #define GS "gs"
 #else
-    mkdir(createdDir);
 #define GS "C:\\gs\\bin\\gswin64c.exe"
 #endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
-  }
-
   snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
