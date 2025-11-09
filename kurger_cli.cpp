@@ -52,58 +52,58 @@ static size_t indexLastSep(const char *str) {
 }
 
 static void pdf2img(const char *str, int spin1, int spin2, int resolution) {
-    char imageCombo[] = "png";
-    char sdeviceCombo[] = "png16m";
-    char pdfName[VLA+1] = {'\0'};
-    char BaseName[VLA+1] = {'\0'};
-    char params[VLA+1] = {'\0'};
-    char ren1[VLA+1] = {'\0'};
-    char ren2[VLA+1] = {'\0'};
-    char createdDir[VLA+1] = {'\0'};
-    int smallRange = (spin2 - spin1) + 2;
-    int bigRange = spin1;
-    int y = 0;
-    size_t dirnameLen = indexLastSep(str);
-    size_t x = 0;
-    size_t z = 0;
-    size_t fit = strlen(str) - 4; /* exclude the .pdf file extension */
-    struct stat DiR;
+  char imageCombo[] = "png";
+  char sdeviceCombo[] = "png16m";
+  char pdfName[VLA+1] = {'\0'};
+  char BaseName[VLA+1] = {'\0'};
+  char params[VLA+1] = {'\0'};
+  char ren1[VLA+1] = {'\0'};
+  char ren2[VLA+1] = {'\0'};
+  char createdDir[VLA+1] = {'\0'};
+  int smallRange = (spin2 - spin1) + 2;
+  int bigRange = spin1;
+  int y = 0;
+  size_t dirnameLen = indexLastSep(str);
+  size_t x = 0;
+  size_t z = 0;
+  size_t fit = strlen(str) - 4; /* exclude the .pdf file extension */
+  struct stat DiR;
 
-    if (1850U <= fit)  { std::cout << "The given filename is too long!\n" << std::endl; return; }
-    if (spin1 > spin2) { std::cout << "From page can't be greater than To page." << std::endl; return; }
+  if (1850U <= fit)  { std::cout << "The given filename is too long!\n" << std::endl; return; }
+  if (spin1 > spin2) { std::cout << "From page can't be greater than To page." << std::endl; return; }
 
-    snprintf(pdfName, VLA, "%s", str);
-    for (z = 0, x = dirnameLen+1; x < fit; x++, z++) { BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */ }
-    BaseName[z] = '\0';
+  snprintf(pdfName, VLA, "%s", str);
+  for (z = 0, x = dirnameLen+1; x < fit; x++, z++) { BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */ }
+  BaseName[z] = '\0';
 
-    if (250U < z) { std::cout << "The given filename is too long!" << std::endl; return; }
+  if (250U < z) { std::cout << "The given filename is too long!" << std::endl; return; }
 
-    snprintf(createdDir, VLA, "%s_converted", pdfName);
-    stat(createdDir, &DiR);
-    if (0 == S_ISDIR(DiR.st_mode))
-    {
+  snprintf(createdDir, VLA, "%s_converted", pdfName);
+  stat(createdDir, &DiR);
+  if (0 == S_ISDIR(DiR.st_mode))
+   {
 #if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-        mkdir(createdDir, 0700);
+    mkdir(createdDir, 0700);
 #define GS "gs"
 #else
-        mkdir(createdDir);
+    mkdir(createdDir);
 #define GS "C:\\gs\\bin\\gswin64c.exe"
 #endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
     }
 
-    snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
+  snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
                     "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
       spin1, spin2, pdfName, imageCombo, sdeviceCombo, resolution, str);
-    std::cout << "Please wait until we convert the requested images." << std::endl;
-    system(params);
+  std::cout << "Please wait until we convert the requested images." << std::endl;
+  system(params);
 
-    for (y = 1; y < smallRange; y++, bigRange++) {
-      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfName, y, imageCombo);
-      snprintf(ren2, VLA, "%s/%s_page_%d.%s", createdDir, BaseName, bigRange, imageCombo);
-      remove(ren2);
-      rename(ren1, ren2);
-    }
-    std::cout << "Done" << std::endl;
+  for (y = 1; y < smallRange; y++, bigRange++) {
+    snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfName, y, imageCombo);
+    snprintf(ren2, VLA, "%s/%s_page_%d.%s", createdDir, BaseName, bigRange, imageCombo);
+    remove(ren2);
+    rename(ren1, ren2);
+  }
+  std::cout << "Done" << std::endl;
 }
