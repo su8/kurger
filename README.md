@@ -109,6 +109,6 @@ GOTO loop
 
 The above script will convert the requestd pdf file, but the pictures will omit the first character, so `book.pdf` will become `ook_page_1.png`.
 
-### To compile the game press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script.
+### To compile the kurger_cli.cpp press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script.
 
 Optioanlly if you want to play the game from VSCode's console -- wait until it compiles, after that press **CTRL** + **\`** and paste this `cp -r C:\Users\YOUR_USERNAME_GOES_HERE\Desktop\main.exe C:\MingW\bin;cd C:\MingW\bin;.\main.exe`
