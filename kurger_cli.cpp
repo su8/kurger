@@ -31,7 +31,7 @@ static size_t indexLastSep(const char *str);
 static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned resolution);
 
 int main(int argc, char *argv[]) {
-  if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file 'book.pdf' - the quotes are mandatory for the given file" << std::endl; return EXIT_FAILURE; }
+  if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file book.pdf" << std::endl; return EXIT_FAILURE; }
   pdf2img(argv[8], std::strtoul(argv[2], static_cast<char **>(nullptr), 10), std::strtoul(argv[4], static_cast<char **>(nullptr), 10), std::strtoul(argv[6], static_cast<char **>(nullptr), 10));
   return EXIT_SUCCESS;
 }
