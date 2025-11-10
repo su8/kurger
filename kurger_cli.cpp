@@ -23,7 +23,6 @@ MA 02110-1301, USA.
 #include <string>
 #include <algorithm>
 #include <filesystem>
-#include <sys/types.h>
 
 #define VLA 4999
 
@@ -75,7 +74,7 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
   if (spin1 > spin2) { std::cout << "From page can't be greater than To page." << std::endl; return; }
 
   snprintf(pdfName, VLA, "%s", str);
-  for (z = 0, x = dirnameLen+1; x < fit; x++, z++) { BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */ }
+  for (z = 0, x = dirnameLen + 1; x < fit; x++, z++) { BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */ }
   BaseName[z] = '\0';
 
   if (250U < z) { std::cout << "The given filename is too long!" << std::endl; return; }
@@ -104,4 +103,8 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
     std::rename(ren1, ren2);
   }
   std::cout << "Done" << std::endl;
+#ifdef _WIN32
+  snprintf(pdfName, sizeof(pdfName), "explorer %s", createdDir);
+  std::system(pdfName);
+#endif /* _WIN32*/
 }
