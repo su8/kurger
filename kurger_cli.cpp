@@ -105,6 +105,8 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
   std::cout << "Done" << std::endl;
 #ifdef _WIN32
   snprintf(pdfName, sizeof(pdfName), "explorer %s", createdDir);
-  std::system(pdfName);
+#else
+  snprintf(pdfName, sizeof(pdfName), "xdg-open %s", createdDir);
 #endif /* _WIN32*/
+  std::system(pdfName);
 }
