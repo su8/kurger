@@ -31,9 +31,6 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
 
 int main(int argc, char *argv[]) {
   if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file \"the book.pdf\" ### the quotes are mandatory for the given file when dealing with spaces in its name" << std::endl; return EXIT_FAILURE; }
-  /*char str[256] = {'\0'};
-  char *ptr = str;
-  for (unsigned int x = 8; x < argc; x++) { ptr += snprintf(ptr, sizeof(str), "%s", argv[x]); }*/
   pdf2img(argv[8], std::strtoul(argv[2], static_cast<char **>(nullptr), 10), std::strtoul(argv[4], static_cast<char **>(nullptr), 10), std::strtoul(argv[6], static_cast<char **>(nullptr), 10));
   return EXIT_SUCCESS;
 }
@@ -44,11 +41,11 @@ static size_t indexLastSep(const char *str) {
   size_t x = 0;
 
   for (; *ptr; x++, ptr++) {
-#if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-    if ('/' == *ptr) { sepIndex = x; /* keep in mind that we use loop */ }
+#ifdef _WIN32
+  if ('\\' == *ptr) { sepIndex = x; }
 #else
-    if ('\\' == *ptr) { sepIndex = x; }
-#endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
+  if ('/' == *ptr) { sepIndex = x; /* keep in mind that we use loop */ }
+#endif /* _WIN32 */
   }
     return sepIndex;
 }
@@ -83,11 +80,11 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
   if (!std::filesystem::exists(pdfName)) { std::cout << pdfName << " doesn't exist.\nExiting!" << std::endl; return; }
   if (!std::filesystem::is_directory(createdDir)) { std::filesystem::create_directory(createdDir); }
 
-#if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-#define GS "gs"
-#else
+#ifdef _WIN32
 #define GS "C:\\gs\\bin\\gswin64c.exe"
-#endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
+#else
+#define GS "gs"
+#endif /* _WIN32 */
   snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
                     "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
                     "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
@@ -107,6 +104,6 @@ static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned 
   snprintf(pdfName, sizeof(pdfName), "explorer %s", createdDir);
 #else
   snprintf(pdfName, sizeof(pdfName), "xdg-open %s", createdDir);
-#endif /* _WIN32*/
+#endif /* _WIN32 */
   std::system(pdfName);
 }
