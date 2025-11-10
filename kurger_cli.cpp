@@ -31,11 +31,11 @@ static size_t indexLastSep(const char *str);
 static void pdf2img(const char *str, unsigned  spin1, unsigned  spin2, unsigned resolution);
 
 int main(int argc, char *argv[]) {
-  if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file 'the book.pdf' - the quotes are mandatory for the given file when dealing with spaces in its name" << std::endl; return EXIT_FAILURE; }
-  char str[256] = {'\0'};
+  if (argc < 9) { std::cout << "kurger from 1 to 10 resolution 100 file \"the book.pdf\" ### the quotes are mandatory for the given file when dealing with spaces in its name" << std::endl; return EXIT_FAILURE; }
+  /*char str[256] = {'\0'};
   char *ptr = str;
-  for (unsigned int x = 8; x < argc; x++) { ptr += snprintf(ptr, sizeof(str), "%s", argv[x]); }
-  pdf2img(str, std::strtoul(argv[2], static_cast<char **>(nullptr), 10), std::strtoul(argv[4], static_cast<char **>(nullptr), 10), std::strtoul(argv[6], static_cast<char **>(nullptr), 10));
+  for (unsigned int x = 8; x < argc; x++) { ptr += snprintf(ptr, sizeof(str), "%s", argv[x]); }*/
+  pdf2img(argv[8], std::strtoul(argv[2], static_cast<char **>(nullptr), 10), std::strtoul(argv[4], static_cast<char **>(nullptr), 10), std::strtoul(argv[6], static_cast<char **>(nullptr), 10));
   return EXIT_SUCCESS;
 }
 
