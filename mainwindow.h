@@ -19,6 +19,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -46,8 +47,12 @@ private slots:
     void on_comboBox_2_currentIndexChanged(int index);
 
 private:
+    void pdf2img(const QString &pdfPath);
+
     // Tray icon
     //unsigned short int closing;
     Ui::MainWindow *ui;
+    QString m_pdfFile;
+    QString m_lastDirectory;
 };
 #endif // MAINWINDOW_H

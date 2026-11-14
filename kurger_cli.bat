@@ -1,15 +1,23 @@
-:TOP
-@CLS
 @ECHO OFF
+SETLOCAL
 TITLE kurger_cli
-:BEGIN
-if not exist C:\MingW\bin\kurger_cli.exe (
-  COPY kurger_cli.exe C:\MingW\bin\kurger_cli.exe
+
+IF EXIST "%~dp0kurger_cli.exe" (
+  SET "KURGER_CLI=%~dp0kurger_cli.exe"
+) ELSE (
+  SET "KURGER_CLI=kurger_cli.exe"
 )
-CLS
+
 :loop
-echo from 1 to 10 resolution 100 file book.pdf  # without quotes for book.pdf
-SET /P NAME=
-C:\MingW\bin\kurger_cli.exe %name%
+CLS
+ECHO Usage example:
+ECHO   from 1 to 10 resolution 100 file "book.pdf"
+ECHO.
+SET "ARGS="
+SET /P "ARGS=kurger_cli> "
+IF NOT DEFINED ARGS GOTO :eof
+
+"%KURGER_CLI%" %ARGS%
+ECHO.
 PAUSE
 GOTO loop

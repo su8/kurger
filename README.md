@@ -8,7 +8,7 @@ qt6 - ![](media/snap.png) qt5 - ![](media/snap2.png)
 
 Before the actual conversion, users will be able to set the resolution of the output image, as well as to specify the pages they want to convert. The software can convert multiple PDF pages at once, into multiple images, with a single mouse click.
 
-**kurger_cli.cpp** is command line interface version that wokrs in linux, bsd and windows like it's GUI version.
+**kurger_cli.cpp** is a command line interface version that works in Linux, BSD, and Windows like its GUI version.
 
 
 ## Installation
@@ -24,13 +24,26 @@ You'll also need to install [Ghostscript](https://ghostscript.com/releases/gsdnl
 If on **Linux/\*BSD** compile with:
 
 ```bash
-cmake .
-make -j8 # 8 cores/threads to use in parallel compile
-sudo/doas make install
-
-# to uninstall it
-sudo make uninstall
+cmake -S . -B build
+cmake --build build -j8 # 8 cores/threads to use in parallel compile
+sudo cmake --install build
 ```
+
+This builds both the graphical `kurger` executable and the `kurger_cli`
+command line executable. Ghostscript can be installed anywhere, set the
+`KURGER_GS` environment variable to its full path if it is not in `PATH`
+(or not in `C:\gs\bin` on Windows).
+
+## Command line usage
+
+```bash
+kurger_cli from 1 to 10 resolution 100 file "the book.pdf"
+```
+
+`from` and `to` are the first and last PDF page to convert, `resolution` is
+the output DPI and `file` is the path to the PDF. Page numbers must be between
+1 and 9999 and `from` cannot be greater than `to`. Quote the file name if it
+contains spaces.
 
 ---
 
@@ -93,8 +106,13 @@ In [Visual Studio Code Editor](https://code.visualstudio.com/download), go to **
 }
 ```
 
-To convert some pdf file with the `kurger_cli.bat` script, right click and `copy as path` the **pdf book**, then right click it in the opened CMD window and remove the quotes at both sides.
+To convert a PDF with the `kurger_cli.bat` script, right click the PDF, choose
+`copy as path`, and paste it at the prompt. The quotes around a path with
+spaces can stay, and they can be removed for a simple file name such as
+`book.pdf`.
 
-### To compile the kurger_cli.cpp press **CTRL** + **SHIFT** + **B** , then from the same Desktop folder start the `kurger_cli.bat` script. Now you can delete the "kurger_cli.exe" file
+### To compile `kurger_cli.cpp` press **CTRL** + **SHIFT** + **B**, then start the `kurger_cli.bat` script from the same folder.
 
-Optioanlly if you want to play the game from VSCode's console -- wait until it compiles, after that press **CTRL** + **\`** and paste this `cp -r C:\Users\YOUR_USERNAME_GOES_HERE\Desktop\main.exe C:\MingW\bin;cd C:\MingW\bin;.\main.exe from 5 to 10 resolution 100 file book.pdf`
+Optionally, to run it from a Visual Studio Code console, wait until it
+compiles, press **CTRL** + **\`** and paste:
+`cp -r C:\Users\YOUR_USERNAME_GOES_HERE\Desktop\main.exe C:\MingW\bin;cd C:\MingW\bin;.\main.exe from 5 to 10 resolution 100 file book.pdf`

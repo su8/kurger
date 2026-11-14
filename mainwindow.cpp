@@ -15,48 +15,50 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
   MA 02110-1301, USA.
 */
-#include <iostream>
-#include <string>
-#include <cstdio>
-#include <cstdlib>
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <QApplication>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QIcon>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QIcon>
+#include <QMessageBox>
+#include <QProcess>
+#include <QSignalBlocker>
 #include <QUrl>
-/* Tray icon
-#include <QSystemTrayIcon>
-#include <QMenu>
-#include <QAction>
-#include <QCloseEvent>*/
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-static void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWarning);
-static void pdf2img(const char *str);
-static size_t indexLastSep(const char *str);
+static void RaiseMsg(const QString &title, const QString &message, unsigned short int isWarning);
 
-#define VLA 4999
-
-static std::string PdfFile = "";
-static char lastDirectory[VLA+1] = {'\0'};
-static Ui::MainWindow *UI;
-/* Tray icon
-static QAction *exitAction;
-static QMenu *trayIconMenu;
-static QSystemTrayIcon *sysTrayIcon;*/
+/*
+ * Ghostscript treats '%' in -sOutputFile as the start of a page-number
+ * placeholder. A literal '%' in the input path has to be doubled.
+ */
+static QString escapeGhostscriptPattern(const QString &text)
+{
+    QString escaped;
+    escaped.reserve(text.size() * 2);
+    for (const QChar character : text)
+    {
+        escaped += character;
+        if (character == QLatin1Char('%'))
+        {
+            escaped += character;
+        }
+    }
+    return escaped;
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    UI = ui;
+
+    /* Load the icon from the executable instead of the current directory. */
+    setWindowIcon(QIcon(QStringLiteral(":/media/icon.xpm")));
 
     ui->comboBox->addItems({"png", "jpg", "bmp", "tiff"});
     ui->comboBox_2->addItems({"png16m", "pngalpha", "pnggray", "jpeg", "jpegcmyk", "jpeggray", "bmp16m", "bmpgray", "tiff24nc", "tiffgray"});
@@ -87,12 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    //delete UI;
-
     /* Tray icon
     delete sysTrayIcon;
     delete trayIconMenu;
-    delete exitAction; */
+    delete exitAction;
+    */
 
     delete ui;
 }
@@ -122,205 +123,177 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::on_pushButton_clicked()
 {
-    if (UI->spinBox_2->value() > UI->spinBox_3->value())
-    {
-        RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
-        return;
-    }
-    if (PdfFile == "")
+    if (m_pdfFile.isEmpty())
     {
         RaiseMsg("No pdf selected", "You must select some PDF file first and then click this button.", 1U);
         return;
     }
-    pdf2img(PdfFile.c_str());
+    pdf2img(m_pdfFile);
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    char dialogFile[VLA+1] = {'\0'};
-
-    if (UI->spinBox_2->value() > UI->spinBox_3->value())
+    const QString filename = QFileDialog::getOpenFileName(
+                this,
+                tr("Open PDF file"),
+                m_lastDirectory.isEmpty() ? QDir::currentPath() : m_lastDirectory,
+                tr("PDF File (*.pdf)"));
+    if (filename.isEmpty())
     {
-        RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
     }
-    QString filename = QFileDialog::getOpenFileName(
-                nullptr,
-                QObject::tr("Open PDF file"),
-                (*lastDirectory) ? lastDirectory : QDir::currentPath(),
-                QObject::tr("PDF File (*.pdf)"));
-    if ((!filename.isEmpty()) && (!filename.isNull()))
-    {
-        snprintf(dialogFile, VLA, "%s", filename.toStdString().c_str());
-        snprintf(lastDirectory, VLA, "%s", dialogFile);
-        lastDirectory[indexLastSep(dialogFile)] = '\0';
-        PdfFile = filename.toStdString();
-        pdf2img(dialogFile);
-    }
+
+    m_pdfFile = filename;
+    m_lastDirectory = QFileInfo(filename).absolutePath();
+    pdf2img(filename);
 }
 
-static void RaiseMsg(const QString &msg1, const QString &msg2, unsigned short int isWarning)
+static void RaiseMsg(const QString &title, const QString &message, unsigned short int isWarning)
 {
     QMessageBox msg;
-    msg.setText(msg2);
+    msg.setText(message);
     msg.setIcon((isWarning == 1U) ? QMessageBox::Warning : QMessageBox::Information);
-    msg.setWindowTitle(msg1);
-    msg.setWindowIcon(static_cast<QIcon>("media/icon.xpm"));
+    msg.setWindowTitle(title);
+    msg.setWindowIcon(QIcon(QStringLiteral(":/media/icon.xpm")));
     msg.exec();
 }
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
-    unsigned short int sdevCombo = 0;
+    /* The default sDevice for png, jpg, bmp and tiff. */
+    static const int defaultDevice[] = {0, 3, 6, 8};
+    const int deviceCount = static_cast<int>(sizeof(defaultDevice) / sizeof(defaultDevice[0]));
 
-    if (index == 0)
+    if (index < 0 || index >= deviceCount)
     {
-        sdevCombo = 0;
+        return;
     }
-    else if (index == 1)
-    {
-        sdevCombo = 3;
-    }
-    else
-    {
-        sdevCombo = (index == 2) ? 6 : 8;
-    }
-    UI->comboBox_2->setCurrentIndex(sdevCombo);
+
+    /* Do not let the second combo box change the image format back. */
+    const QSignalBlocker blocker(ui->comboBox_2);
+    ui->comboBox_2->setCurrentIndex(defaultDevice[index]);
 }
 
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
-    unsigned short int sdevCombo = 0, imageCombo = 0;
+    int imageCombo = 0;
 
-    if (index == 0)
-        sdevCombo = 0;
-    else if (index == 1)
-        sdevCombo = 1;
-    else if (index == 2)
-        sdevCombo = 2;
-    else    /* 'active' not in png group */
+    if (index >= 3 && index <= 5)       /* jpeg, jpegcmyk, jpeggray */
     {
-        imageCombo = 1; /* The jpg group */
-        if (index == 3)
-            sdevCombo = 3;
-        else if (index == 4)
-            sdevCombo = 4;
-        else if (index == 5)
-            sdevCombo = 5;
-        else    /* 'active' not in jpg group */
-        {
-            imageCombo = 2; /* The bmp group */
-            if (index == 6)
-                sdevCombo = 6;
-            else if (index == 7)
-                sdevCombo = 7;
-            else    /* 'active' not in bmp group */
-            {
-                imageCombo = 3; /* The tiff group */
-                sdevCombo = (index == 8) ? 8 : 9;
-            }
-        }
+        imageCombo = 1;
     }
-    UI->comboBox->setCurrentIndex(imageCombo);
-    UI->comboBox_2->setCurrentIndex(sdevCombo);
+    else if (index >= 6 && index <= 7)  /* bmp16m, bmpgray */
+    {
+        imageCombo = 2;
+    }
+    else if (index >= 8)                /* tiff24nc, tiffgray */
+    {
+        imageCombo = 3;
+    }
+
+    const QSignalBlocker blocker(ui->comboBox);
+    ui->comboBox->setCurrentIndex(imageCombo);
 }
 
-/*
-   return the last separator '/' index number,
-   we will use this index number to create our own
-   `basename' alternative in C++
-*/
-static size_t indexLastSep(const char *str)
+void MainWindow::pdf2img(const QString &pdfPath)
 {
-    const char *ptr = str;
-    size_t sepIndex = 0;
-    size_t x = 0;
+    const int firstPage = ui->spinBox_2->value();
+    const int lastPage = ui->spinBox_3->value();
+    const int resolution = ui->spinBox->value();
+    const QString imageFormat = ui->comboBox->currentText();
+    const QString device = ui->comboBox_2->currentText();
 
-    for (; *ptr; x++, ptr++)
-    {
-        if ('/' == *ptr)
-        {
-            sepIndex = x; /* keep in mind that we use loop */
-        }
-    }
-    return sepIndex;
-}
-
-static void pdf2img(const char *str)
-{
-    char imageCombo[10] = {'\0'};
-    char sdeviceCombo[10] = {'\0'};
-    char pdfName[VLA+1] = {'\0'};
-    char BaseName[VLA+1] = {'\0'};
-    char params[VLA+1] = {'\0'};
-    char ren1[VLA+1] = {'\0'};
-    char ren2[VLA+1] = {'\0'};
-    char created_dir[VLA+1] = {'\0'};
-    int spin1 = UI->spinBox_2->value();
-    int spin2 = UI->spinBox_3->value();
-    int smallRange = (spin2 - spin1) + 2;
-    int bigRange = spin1;
-    int y = 0;
-    size_t dirnameLen = indexLastSep(str);
-    size_t x = 0;
-    size_t z = 0;
-    size_t fit2 = strlen(str) - 4; /* exclude the .pdf file extension */
-    struct stat DiR;
-
-    if (1850U <= fit2)
-    {
-        RaiseMsg("Warning!", "The given filename is too long!", 1U);
-        return;
-    }
-    if (spin1 > spin2)
+    if (firstPage > lastPage)
     {
         RaiseMsg("Reversed Numbers", "From page can't be greater than To page.", 1U);
         return;
     }
 
-    snprintf(imageCombo, 10, "%s", UI->comboBox->currentText().toStdString().c_str());
-    snprintf(sdeviceCombo, 10, "%s", UI->comboBox_2->currentText().toStdString().c_str());
-
-    snprintf(pdfName, VLA, "%s", str);
-    for (z = 0, x = dirnameLen+1; x < fit2; x++, z++)
+    const QFileInfo pdfInfo(pdfPath);
+    if (!pdfInfo.exists() || !pdfInfo.isFile())
     {
-        BaseName[z] = pdfName[x]; /* /path/to/some.pdf -> some      */
-    }
-    BaseName[z] = '\0';
-
-    if (250U < z)
-    {
-        RaiseMsg("Warning!", "The given filename is too long!", 1U);
+        RaiseMsg("No pdf selected", "The selected PDF file does not exist.", 1U);
         return;
     }
 
-    snprintf(created_dir, VLA, "%s_converted", pdfName);
-    stat(created_dir, &DiR);
-    if (0 == S_ISDIR(DiR.st_mode))
+    if (pdfInfo.suffix().compare(QStringLiteral("pdf"), Qt::CaseInsensitive) != 0)
     {
-#if defined(__OpenBSD__) || defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__)
-        mkdir(created_dir, 0700);
-#define GS "gs"
+        RaiseMsg("Not a PDF file", "Please select a file with the .pdf extension.", 1U);
+        return;
+    }
+
+    const QString outputDir = pdfPath + QStringLiteral("_converted");
+    if (!QDir().mkpath(outputDir))
+    {
+        RaiseMsg("Cannot create directory", "Could not create the output directory:\n" + outputDir, 1U);
+        return;
+    }
+
+    QString gsProgram = qEnvironmentVariable("KURGER_GS");
+    if (gsProgram.isEmpty())
+    {
+#ifdef Q_OS_WIN
+        gsProgram = QStringLiteral("C:/gs/bin/gswin64.exe");
 #else
-        mkdir(created_dir);
-#define GS "C:\\gs\\bin\\gswin64.exe"
-#endif /*__OpenBSD__ || __linux__ || __FreeBSD__ || __NetBSD__ */
+        gsProgram = QStringLiteral("gs");
+#endif
     }
 
-    snprintf(params, VLA, GS " -dBATCH -dNOPAUSE -dQUIET -dFirstPage=%d -dLastPage=%d "
-                    "-sOutputFile=\"%s\"_pAge_%%01d.%s -sDEVICE=%s -r%d "
-                    "-dGraphicsAlphaBits=4 -sBandListStorage=memory "
-                    "-dBufferSpace=99000 -dNumRenderingThreads=8 \"%s\"",
-      spin1, spin2, pdfName, imageCombo, sdeviceCombo, UI->spinBox->value(), str);
+    const QString outputPattern = escapeGhostscriptPattern(pdfPath) + QStringLiteral("_pAge_%01d.") + imageFormat;
+    const QStringList arguments{
+        QStringLiteral("-dBATCH"),
+        QStringLiteral("-dNOPAUSE"),
+        QStringLiteral("-dQUIET"),
+        QStringLiteral("-dFirstPage=%1").arg(firstPage),
+        QStringLiteral("-dLastPage=%1").arg(lastPage),
+        QStringLiteral("-sOutputFile=") + outputPattern,
+        QStringLiteral("-sDEVICE=") + device,
+        QStringLiteral("-r%1").arg(resolution),
+        QStringLiteral("-dGraphicsAlphaBits=4"),
+        QStringLiteral("-sBandListStorage=memory"),
+        QStringLiteral("-dBufferSpace=99000"),
+        QStringLiteral("-dNumRenderingThreads=8"),
+        pdfPath
+    };
+
     RaiseMsg("Please wait...", "Please wait until we convert the requested images.", 0U);
-    system(params);
 
-    for (y = 1; y < smallRange; y++, bigRange++)
+    /* QProcess takes an argument list, so file names never reach a shell. */
+    const int exitCode = QProcess::execute(gsProgram, arguments);
+    if (exitCode != 0)
     {
-      snprintf(ren1, VLA, "%s_pAge_%d.%s", pdfName, y, imageCombo);
-      snprintf(ren2, VLA, "%s/%s_page_%d.%s", created_dir, BaseName, bigRange, imageCombo);
-      remove(ren2);
-      rename(ren1, ren2);
+        RaiseMsg("Conversion failed",
+                 QStringLiteral("Ghostscript could not convert the file (exit code %1).\n"
+                                "Make sure Ghostscript is installed and that the PDF is valid.")
+                     .arg(exitCode),
+                 1U);
+        return;
     }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(static_cast<QString>(created_dir)));
+
+    const QString baseName = pdfInfo.completeBaseName();
+    const int pageCount = lastPage - firstPage + 1;
+    int failedRenames = 0;
+
+    for (int page = 0; page < pageCount; ++page)
+    {
+        const QString source = pdfPath + QStringLiteral("_pAge_%1.").arg(page + 1) + imageFormat;
+        const QString target = QDir(outputDir).filePath(
+            QStringLiteral("%1_page_%2.%3").arg(baseName).arg(firstPage + page).arg(imageFormat));
+
+        QFile::remove(target);
+        if (!QFile::rename(source, target))
+        {
+            ++failedRenames;
+        }
+    }
+
+    if (failedRenames != 0)
+    {
+        RaiseMsg("Conversion problem",
+                 QStringLiteral("%1 of %2 converted pages could not be renamed.")
+                     .arg(failedRenames).arg(pageCount),
+                 1U);
+    }
+
+    QDesktopServices::openUrl(QUrl::fromLocalFile(outputDir));
 }

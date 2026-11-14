@@ -32,6 +32,9 @@
 *.app
 
 # Build directories
-build-*
-CMakeFiles
-kurger_windows_autogen
+build/
+build-*/
+build_*/
+CMakeFiles/
+*_autogen/
+cmake-build-*/

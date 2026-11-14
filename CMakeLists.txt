@@ -14,9 +14,11 @@
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #   MA 02110-1301, USA.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
-project(kurger_windows VERSION 0.1 LANGUAGES CXX)
+project(kurger VERSION 0.2.0 LANGUAGES CXX)
+
+include(GNUInstallDirs)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -26,63 +28,69 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-set(CMAKE_HAVE_THREADS_LIBRARY 1)
-set(CMAKE_USE_WIN32_THREADS_INIT 0)
-set(CMAKE_USE_PTHREADS_INIT 1)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 
 set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        resources.qrc
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(kurger_windows
+if(QT_VERSION_MAJOR GREATER_EQUAL 6)
+    qt_add_executable(kurger
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET kurger_windows APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET kurger APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(kurger_windows SHARED
+        add_library(kurger SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(kurger_windows
+        add_executable(kurger
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(kurger_windows PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(kurger_windows PRIVATE Qt${QT_VERSION_MAJOR}::Gui)
-target_link_libraries(kurger_windows PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(kurger PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
-set_target_properties(kurger_windows PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+if(MSVC)
+    target_compile_options(kurger PRIVATE /W4)
+else()
+    target_compile_options(kurger PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+set_target_properties(kurger PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.github.su8.kurger
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS kurger_windows
+# Command line version, it does not need Qt at all.
+add_executable(kurger_cli kurger_cli.cpp)
+
+if(MSVC)
+    target_compile_options(kurger_cli PRIVATE /W4)
+else()
+    target_compile_options(kurger_cli PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+install(TARGETS kurger kurger_cli
     BUNDLE DESTINATION .
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(kurger_windows)
+if(QT_VERSION_MAJOR GREATER_EQUAL 6)
+    qt_finalize_executable(kurger)
 endif()
